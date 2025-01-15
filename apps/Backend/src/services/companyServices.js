@@ -95,9 +95,8 @@ export default class companyServices {
                 return null;
             }
 
-            const userId = company.user;
 
-            const response =  await this.CompanyModel.addJNFToCompany(companyId, jnfData, userId);
+            const response =  await this.CompanyModel.addJNFToCompany(companyId, jnfData);
 
             console.log("added JNF",response);
             return new apiResponse(200, response, "JNF Added To Company Successfully");
