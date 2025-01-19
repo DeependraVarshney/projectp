@@ -28,7 +28,7 @@ export default class companyModel {
         console.log("Model layer: findCompanyById called");
     
         try {
-            const company = await this.company.findById(id).populate("JNFs"); 
+            const company = await this.company.findById(id); 
             if (!company) {
                 return null; 
             }
@@ -72,26 +72,28 @@ export default class companyModel {
         }
     }
 
-    async addJNFToCompany(companyId, jnfData, userId) {
+    async addJNFToCompany(companyId, jnfData) {
         console.log("Company Model: addJNFToComapany called");
         try {
-            const company = await this.company.findById(companyId);
-            if (!company) {
+            const company1 = await this.company.findById(companyId).populate('user');
+            if (!company1) {
                 console.log("Error in fetching company");
                 return new apiResponse(404, null, "Company not found");
             }
+            const userId = company1.user?._id;
+            console.log(userId);
 
             jnfData.submittedBy = userId; 
             jnfData.submissionDate = new Date();
 
             const createdJNF = await JNF.create(jnfData);
-            company.JNFs.push(createdJNF._id);
+            company1.JNFs.push(createdJNF._id);
 
-            await company.save();
+            await company1.save();
 
             return new apiResponse(200, createdJNF, "JNF added successfully");
         } catch (error) {
-            return new apiResponse(500, null, error.message);
+            return new apiResponse(500, "Error", error.message);
         }
     }
 
@@ -99,11 +101,12 @@ export default class companyModel {
     async getJNFsForCompany(companyId) {
         console.log("Company Model: getJNFsForCompany called");
         try {
-            const company = await this.company.findById(companyId).populate("JNFs");
-            if (!company) {
+            const company1 = await this.company.findById(companyId).populate('JNFs');
+            if (!company1) {
+                console.log(company1);
                 return new apiResponse(404, null, "Company not found");
             }
-            return new apiResponse(200, company.JNFs, "JNFs fetched successfully");
+            return new apiResponse(200, company1.JNFs, "JNFs fetched successfully");
         } catch (error) {
             return new apiResponse(500, null, error.message);
         }
