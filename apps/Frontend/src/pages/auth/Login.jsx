@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import { useAuth } from '../../hooks/useAuth';
 
-const Login = () => {
+const AdminLogin = () => {
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -59,4 +59,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default AdminLogin; 

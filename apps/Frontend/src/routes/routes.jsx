@@ -13,14 +13,20 @@ const Settings = lazy(() => import('../pages/admin/Settings'));
 const Audit = lazy(() => import('../pages/admin/Audit'));
 const Automation = lazy(() => import('../pages/admin/Automation'));
 // Auth Pages
-const Login = lazy(() => import('../pages/auth/Login'));
+const AdminLogin = lazy(() => import('../pages/auth/Login'));
+const Login = lazy(() => import('../components/auth/Login'));
+const Signup = lazy(() => import('../components/auth/Signup'));
 const ForgotPassword = lazy(() => import('../pages/auth/ForgotPassword'));
 const ResetPassword = lazy(() => import('../pages/auth/ResetPassword'));
 const Notifications = lazy(() => import('../pages/admin/Notifications'));
 const CompanyDashboard = lazy(() => import('../components/company/CompanyDashboard'));
+const AuthLayout = lazy(() => import('../components/layout/AuthLayout'));
 // Error Pages
 const Error404 = lazy(() => import('../pages/Error404'));
-
+const LandingPage = lazy(() => import('../pages/Landing/LandingPage'));
+// studentdashborad
+const StudentDashboard = lazy(() => import('../components/student/StudentDashboard'));
+const StudentRegistration = lazy(() => import('../components/student/StudentRegistration'));
 const routes = [
   {
     path: '/admin',
@@ -79,18 +85,41 @@ const routes = [
     path: '/auth',
     children: [
       {
-        path: 'login',
-        element: Login,
+        path: 'student',
+        children: [
+          { 
+            path: 'login', 
+            element: Login 
+          },
+          { 
+            path: 'initiate', 
+            element: Signup 
+          }
+        ]
       },
       {
-        path: 'forgot-password',
-        element: ForgotPassword,
+        path: 'recruiter',
+        children: [
+          { 
+            path: 'login', 
+            element: Login 
+          },
+          { 
+            path: 'initiate', 
+            element: Signup 
+          }
+        ]
       },
       {
-        path: 'reset-password',
-        element: ResetPassword,
-      },
-    ],
+        path: 'admin',
+        children: [
+          { 
+            path: 'login', 
+            element: Login 
+          }
+        ]
+      }
+    ]
   },
   {
     path: '/company',
@@ -98,6 +127,19 @@ const routes = [
       {
         path: 'dashboard',
         element: CompanyDashboard,
+      },
+    ],
+  },
+  {
+    path: '/student',
+    children: [
+      {
+        path: 'dashboard',
+        element: StudentDashboard,
+      },
+      {
+        path: 'complete-profile',
+        element: StudentRegistration,
       },
     ],
   },

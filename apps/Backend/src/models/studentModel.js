@@ -2,7 +2,9 @@ import Student from "../schema/student/studentSchema.js";
 import apiResponse from "../utils/apiResponse.js";
 
 export default class StudentModel {
-  student = Student;
+  constructor() {
+    this.student = Student;
+  }
 
   async registerStudent(profileData, userId) {
     try {
@@ -163,6 +165,24 @@ export default class StudentModel {
         null,
         "An error occurred while fetching student profile"
       );
+    }
+  }
+
+  async findOne(query) {
+    try {
+      const student = await this.student.findOne(query);
+      return student;
+    } catch (error) {
+      throw new Error("Error finding student: " + error.message);
+    }
+  }
+
+  async findOneAndUpdate(query, update, options) {
+    try {
+      const student = await this.student.findOneAndUpdate(query, update, options);
+      return student;
+    } catch (error) {
+      throw new Error("Error updating student: " + error.message);
     }
   }
 }

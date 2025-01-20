@@ -1,20 +1,32 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { login, logout, getCurrentUser } from '../store/slices/authSlice';
+import { useNotification } from './admin/useNotification'; // Make sure this path is correct
 
 export const useAuth = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, isAuthenticated, isLoading, error } = useSelector(
+  const { showSuccess, showError } = useNotification();
+  
+  const { user, isAuthenticated, isLoading, error, role } = useSelector(
     (state) => state.auth
   );
 
   const handleLogin = async (credentials) => {
     try {
-      await dispatch(login(credentials)).unwrap();
-      navigate('/admin/dashboard');
+      const result = await dispatch(login(credentials)).unwrap();
+      showSuccess('Login successful');
+      
+      // Redirect based on role
+      if (result.role === 'company') {
+        navigate('/company/dashboard');
+      } else if (result.role === 'student') {
+        navigate('/student/dashboard');
+      } else if (result.role === 'admin') {
+        navigate('/admin/dashboard');
+      }
     } catch (error) {
-      console.error('Login failed:', error);
+      showError(error.message || 'Login failed');
       throw error;
     }
   };
@@ -22,16 +34,19 @@ export const useAuth = () => {
   const handleLogout = async () => {
     try {
       await dispatch(logout()).unwrap();
-      navigate('/auth/login');
+      showSuccess('Logged out successfully');
+      navigate('/auth/select-role');
     } catch (error) {
-      console.error('Logout failed:', error);
+      showError(error.message || 'Logout failed');
       throw error;
     }
   };
 
   const checkAuth = async () => {
     try {
-      await dispatch(getCurrentUser()).unwrap();
+      if (isAuthenticated && role) {
+        await dispatch(getCurrentUser()).unwrap();
+      }
     } catch (error) {
       console.error('Auth check failed:', error);
       throw error;
@@ -43,6 +58,7 @@ export const useAuth = () => {
     isAuthenticated,
     isLoading,
     error,
+    role,
     login: handleLogin,
     logout: handleLogout,
     checkAuth,

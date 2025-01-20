@@ -8,9 +8,18 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
+// CORS configuration
+app.use(cors(
+    {
+  origin: 'http://localhost:5178',// Your frontend URL (must be exact)
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}
+));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
 app.use(cookieParser());
 app.use("/api/v1", router);
 //http://localhost/api/v1/user/signup 

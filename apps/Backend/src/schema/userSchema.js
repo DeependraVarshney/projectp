@@ -1,4 +1,4 @@
-import { Schema as _Schema, model, mongoose } from "mongoose";
+import { Schema as _Schema, model } from "mongoose";
 import jsonwebtoken from 'jsonwebtoken';
 const { sign } = jsonwebtoken;
 import bcrypt from 'bcrypt';
@@ -27,7 +27,7 @@ UserSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
     try {
         const salt = await bcrypt.genSalt(10);
-        this.password = bcrypt.hash(this.password, salt);
+        this.password = await bcrypt.hash(this.password, salt);
         next();
     } catch (error) {
         console.error("Error in pre-save hook:", error); // Log the error
@@ -43,7 +43,8 @@ UserSchema.methods.generateAccessToken = function () {
     return sign(
         {
             _id: this._id,
-            email: this.email
+            email: this.email,
+            role: this.user_role
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
@@ -56,7 +57,8 @@ UserSchema.methods.generateRefreshToken = function () {
     return sign(
         {
             _id: this._id,
-            email: this.email
+            email: this.email,
+            role: this.user_role
         },
         process.env.REFRESH_TOKEN_SECRET,
         {

@@ -1,6 +1,7 @@
 import StudentModel from "../../models/studentModel.js";
 import UserServices from "../userServices.js";
 import apiResponse from "../../utils/apiResponse.js";
+import Student from "../../schema/student/studentSchema.js";
 
 export default class StudentService {
   constructor() {
@@ -109,6 +110,24 @@ export default class StudentService {
     } catch (error) {
       console.log("error in student service", error);
       return apiResponse(500, null, error.message);
+    }
+  }
+  async completeProfile(userId, personalInfo, academics) {
+    try {
+      const student = await Student.findOneAndUpdate(
+        { user: userId },
+        {
+          user: userId,
+          personalInfo,
+          academics,
+          verificationStatus: "pending"
+        },
+        { new: true, upsert: true }
+      );
+
+      return student;
+    } catch (error) {
+      throw new Error("Failed to complete student profile: " + error.message);
     }
   }
 }

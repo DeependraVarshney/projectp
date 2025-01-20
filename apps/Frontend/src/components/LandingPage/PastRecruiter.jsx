@@ -4,14 +4,18 @@ import { Box, Typography } from "@mui/material";
 const PastRecruiters = () => {
   // Array of company logos (URLs or public folder paths)
   const companyLogos = [
-    "/logos/google.png",
-    "/logos/microsoft.png",
-    "/logos/amazon.png",
-    "/logos/apple.png",
-    "/logos/meta.png",
-    "/logos/tesla.png",
-    "/logos/adobe.png",
-    "/logos/ibm.png",
+   
+    "/tnp-americanexp.jpg",
+    "/tnp-akash.jpg",
+    "/amazon-tnp.jpg",
+    
+    "/microsoft1-tnp.jpg",
+    "/ford-tnp.jpg",
+    "/adobe-tnp.jpg",
+    "/tnp-delhrivery.jpg",
+    "/tnp-delhrivery.jpg",
+    "/tnp-delhrivery.jpg",
+
   ];
 
   return (

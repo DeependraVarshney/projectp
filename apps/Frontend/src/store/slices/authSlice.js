@@ -4,12 +4,24 @@ import authService from '../../services/authService';
 const initialState = {
   user: null,
   token: localStorage.getItem('token'),
-  isAuthenticated: false,
+  isAuthenticated: false,   // Change this to true to skip login
   isLoading: false,
   error: null,
   permissions: [],
 };
 
+export const register = createAsyncThunk(
+  'auth/register',
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await authService.register(userData);
+      localStorage.setItem('token', response.token);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Registration failed');
+    }
+  }
+);
 export const login = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
@@ -62,6 +74,22 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+    // Register
+    .addCase(register.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    })
+    .addCase(register.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isAuthenticated = true;
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+      state.permissions = action.payload.permissions;
+    })
+    .addCase(register.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    })
       // Login
       .addCase(login.pending, (state) => {
         state.isLoading = true;

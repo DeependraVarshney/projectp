@@ -2,22 +2,29 @@ import asyncHandler from "../../utils/asyncHandler.js";
 import UserService from "../../services/userServices.js";
 import apiResponse from "../../utils/apiResponse.js";
 
-export default class userController {
+export default class UserController {
     constructor() {
         this.userService = new UserService();
     }
 
     register = asyncHandler(async (req, res) => {
-        const user = await this.userService.registerUser(req.body);
-        const options = {
-            httpOnly: true,
-            secure: true
+        const result = await this.userService.registerUser(req.body);
+        
+        if (result.statusCode === 201) {
+            const options = {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax'
+            };
+
+            res
+                .status(result.statusCode)
+                .cookie("authToken", result.data.authToken, options)
+                .cookie("refreshToken", result.data.refreshToken, options)
+                .json(result);
+        } else {
+            res.status(result.statusCode).json(result);
         }
-        res
-            .status(200)
-            .cookie("authToken", user.data.authToken, options)
-            .cookie("refreshToken", user.data.refreshToken, options)
-            .json(new apiResponse(user.statusCode, user.data, user.message));
     });
 
     verifyEmailByToken = asyncHandler(async (req, res) => {
@@ -27,17 +34,23 @@ export default class userController {
     });
 
     login = asyncHandler(async (req, res) => {
-        const { email, password } = req.body;
-        const result = await this.userService.loginUser(email, password);
-        const options = {
-            httpOnly: true,
-            secure: true
+        const result = await this.userService.loginUser(req.body);
+        
+        if (result.statusCode === 200) {
+            const options = {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax'
+            };
+
+            res
+                .status(result.statusCode)
+                .cookie("authToken", result.data.authToken, options)
+                .cookie("refreshToken", result.data.refreshToken, options)
+                .json(result);
+        } else {
+            res.status(result.statusCode).json(result);
         }
-        res
-            .status(200)
-            .cookie("authToken", result.data.user.authToken, options)
-            .cookie("refreshToken", result.data.user.refreshToken, options)
-            .json(new apiResponse(result.statusCode, result.data, result.message));
     });
 
     logout = asyncHandler(async (req, res) => {
