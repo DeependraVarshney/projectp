@@ -14,7 +14,7 @@ A comprehensive Training and Placement Cell Portal built with React + Vite, desi
 
 1. Clone the repository
 ```bash
-git clone https://github.com/DeependraVarshney/projectp.git
+git clone https://github.com/icellnitkkrtech/projectp.git
 cd apps/Frontend
 ```
 
