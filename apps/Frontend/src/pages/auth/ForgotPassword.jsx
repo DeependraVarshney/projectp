@@ -9,7 +9,7 @@ import {
   Link,
 } from '@mui/material';
 import { useAuth } from '../../hooks/useAuth';
-import { useNotification } from '../../hooks/useNotification';
+import { useNotification } from '../../hooks/admin/useNotification';
 
 const ForgotPassword = () => {
   const { forgotPassword } = useAuth();

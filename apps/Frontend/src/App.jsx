@@ -5,7 +5,7 @@ import { store } from './store';
 
 import { AuthProvider } from './contexts/AuthContext';
 import AppRoutes from './routes';
-import LandingPage from './pages/Landing/LandingPage';
+
 
 function App() {
   return (
@@ -19,6 +19,7 @@ function App() {
               horizontal: 'right',
             }}
           >
+            
             <AppRoutes />
           </SnackbarProvider>
         </AuthProvider>

@@ -1,225 +1,163 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "../../utils/axios";
+import React, { useState } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import { useNotification } from '../../hooks/admin/useNotification';
+import {
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  CircularProgress,
+  Link as MuiLink,
+  Avatar,
+  Grid
+} from '@mui/material';
+import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
+import authService from '../../services/authService';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
+  const { showError, showSuccess } = useNotification();
+  
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    personalInfo: {
-      name: "",
-      rollNumber: "",
-      department: "",
-      batch: "",
-    },
-    academics: {
-      cgpa: "",
-      tenthMarks: "",
-      twelfthMarks: "",
-    },
+    email: '',
+    password: '',
+    confirmPassword: ''
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Determine user role from URL
+  const role = location.pathname.split('/')[2]; // Gets 'student' or 'recruiter'
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name.includes(".")) {
-      const [parent, child] = name.split(".");
-      setFormData((prev) => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value,
-        },
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
+    
+    if (formData.password !== formData.confirmPassword) {
+      showError('Passwords do not match');
+      return;
+    }
 
+    setIsLoading(true);
     try {
-      const response = await axios.post("/api/v1/student/register", {
+      const userData = {
         email: formData.email,
         password: formData.password,
-        personalInfo: formData.personalInfo,
-        academics: formData.academics,
+        user_role: role === 'recruiter' ? 'company' : role
+      };
+      
+      const response = await authService.register(userData);
+      showSuccess('Registration successful');
+      
+      // Auto login after registration
+      await login({
+        email: formData.email,
+        password: formData.password,
+        user_role: userData.user_role
       });
-      if (response.data.statusCode === 201) {
-        navigate(`/student/${response.data.data.student._id}`);
-      }
-    } catch (err) {
-      console.error("Registration error:", err);
-      setError(err.response?.data?.message || "Registration failed");
+      
+      // Navigation will be handled by the auth hook based on user role
+    } catch (error) {
+      showError(error.message || 'Registration failed');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full mx-auto space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Student Registration
-          </h2>
-        </div>
-
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-            {error}
-          </div>
-        )}
-
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Personal Information</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <input
-                  name="personalInfo.name"
-                  type="text"
-                  required
-                  placeholder="Full Name"
-                  value={formData.personalInfo.name}
-                  onChange={handleChange}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <input
-                  name="personalInfo.rollNumber"
-                  type="text"
-                  required
-                  placeholder="Roll Number"
-                  value={formData.personalInfo.rollNumber}
-                  onChange={handleChange}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <select
-                  name="personalInfo.department"
-                  required
-                  value={formData.personalInfo.department}
-                  onChange={handleChange}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Select Department</option>
-                  <option value="CSE">Computer Engineering</option>
-                  <option value="ECE">Electronics & Communication</option>
-                  <option value="ME">Mechanical Engineering</option>
-                  {/* Add other departments */}
-                </select>
-              </div>
-              <div>
-                <input
-                  name="personalInfo.batch"
-                  type="number"
-                  required
-                  placeholder="Batch Year"
-                  value={formData.personalInfo.batch}
-                  onChange={handleChange}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-            </div>
-
-            <h3 className="text-lg font-medium mt-6">Academic Information</h3>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <input
-                  name="academics.cgpa"
-                  type="number"
-                  step="0.01"
-                  required
-                  placeholder="CGPA"
-                  value={formData.academics.cgpa}
-                  onChange={handleChange}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <input
-                  name="academics.tenthMarks"
-                  type="number"
-                  step="0.01"
-                  required
-                  placeholder="10th Marks (%)"
-                  value={formData.academics.tenthMarks}
-                  onChange={handleChange}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <input
-                  name="academics.twelfthMarks"
-                  type="number"
-                  step="0.01"
-                  required
-                  placeholder="12th Marks (%)"
-                  value={formData.academics.twelfthMarks}
-                  onChange={handleChange}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-            </div>
-
-            <h3 className="text-lg font-medium mt-6">Account Information</h3>
-            <div className="space-y-4">
-              <input
-                name="email"
-                type="email"
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+          <PersonAddOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign Up as {role === 'recruiter' ? 'Recruiter' : 'Student'}
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
                 required
-                placeholder="Email address"
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               />
-              <input
-                name="password"
-                type="password"
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
                 required
-                placeholder="Password"
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="new-password"
                 value={formData.password}
                 onChange={handleChange}
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               />
-            </div>
-          </div>
-
-          <button
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                id="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+            </Grid>
+          </Grid>
+          <Button
             type="submit"
-            disabled={loading}
-            className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-              loading ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
-            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            disabled={isLoading}
           >
-            {loading ? "Registering..." : "Register"}
-          </button>
-        </form>
-
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            Already have an account?{" "}
-            <a
-              href="/login"
-              className="font-medium text-blue-600 hover:text-blue-500"
-            >
-              Sign in
-            </a>
-          </p>
-        </div>
-      </div>
-    </div>
+            {isLoading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              'Sign Up'
+            )}
+          </Button>
+          <Grid container justifyContent="center">
+            <Grid item>
+              <MuiLink 
+                component={Link} 
+                to={`/auth/${role}/login`}
+                variant="body2"
+              >
+                Already have an account? Login
+              </MuiLink>
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 

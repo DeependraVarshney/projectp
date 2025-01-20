@@ -1,20 +1,24 @@
 import React from "react";
+import { Box } from "@mui/material";
 import Navbar from "../../components/LandingPage/Navbar";
-import About from "../../components/LandingPage/About";
 import HeroSection from "../../components/LandingPage/HeroSection";
-import Footer from "../../components/LandingPage/Footer";
+import About from "../../components/LandingPage/About";
 import PastRecruiters from "../../components/LandingPage/PastRecruiter";
+import Footer from "../../components/LandingPage/Footer";
 
 const LandingPage = () => {
-
   return (
-    <>
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
       <HeroSection />
-      <About />
-      <PastRecruiters />
+      <Box id="about">
+        <About />
+      </Box>
+      <Box id="recruiters">
+        <PastRecruiters />
+      </Box>
       <Footer />
-    </>
+    </Box>
   );
 };
 

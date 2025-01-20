@@ -50,4 +50,9 @@ studentRouter.post("/apply/:studentId/:jobId", (req, res) =>
 studentRouter.get("/notifications", (req, res) => {
   StudentController.getNotifications(req, res);
 });
+
+studentRouter.post("/complete-profile", (req, res) =>
+  StudentController.completeProfile(req, res)
+);
+
 export default studentRouter;

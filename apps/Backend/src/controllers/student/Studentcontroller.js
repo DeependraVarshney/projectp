@@ -1,5 +1,6 @@
 import asyncHandler from "../../utils/asyncHandler.js";
 import StudentService from "../../services/student/studentService.js";
+import Student from "../../schema/student/studentSchema.js"; // Import the Mongoose model directly
 
 export default class StudentController {
   constructor() {
@@ -35,4 +36,40 @@ export default class StudentController {
     const notifications = await this.studentService.getNotifications();
     res.status(notifications.statusCode).json(notifications);
   });
+
+  async completeProfile(req, res) {
+    try {
+      const { userId, personalInfo, academics } = req.body;
+
+      if (!userId || !personalInfo || !academics) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing required fields",
+        });
+      }
+
+      // Check if user exists using the Mongoose model directly
+      const existingStudent = await Student.findOne({ user: userId });
+      if (existingStudent) {
+        return res.status(400).json({
+          success: false,
+          message: "Student profile already exists",
+        });
+      }
+
+      const student = await this.studentService.completeProfile(userId, personalInfo, academics);
+
+      return res.status(200).json({
+        success: true,
+        message: "Profile completed successfully",
+        data: { student },
+      });
+    } catch (error) {
+      console.error("Error in completeProfile:", error);
+      return res.status(500).json({
+        success: false,
+        message: error.message || "Failed to complete profile",
+      });
+    }
+  }
 }
