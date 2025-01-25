@@ -1,108 +1,111 @@
-import { lazy } from 'react';
+import { lazy } from "react";
 
 // Admin Pages
-const Dashboard = lazy(() => import('../pages/admin/Dashboard'));
-const Students = lazy(() => import('../pages/admin/Students'));
-const Companies = lazy(() => import('../pages/admin/Companies'));
-const JNF = lazy(() => import('../pages/admin/JNF'));
-const Placements = lazy(() => import('../pages/admin/Placements'));
-const Templates = lazy(() => import('../pages/admin/Templates'));
-const Reports = lazy(() => import('../pages/admin/Reports'));
-const Profile = lazy(() => import('../pages/admin/Profile'));
-const Settings = lazy(() => import('../pages/admin/Settings'));
-const Audit = lazy(() => import('../pages/admin/Audit'));
-const Automation = lazy(() => import('../pages/admin/Automation'));
+const Dashboard = lazy(() => import("../pages/admin/Dashboard"));
+const Students = lazy(() => import("../pages/admin/Students"));
+const Companies = lazy(() => import("../pages/admin/Companies"));
+const JNF = lazy(() => import("../pages/admin/JNF"));
+const Placements = lazy(() => import("../pages/admin/Placements"));
+const Templates = lazy(() => import("../pages/admin/Templates"));
+const Reports = lazy(() => import("../pages/admin/Reports"));
+const Profile = lazy(() => import("../pages/admin/Profile"));
+const Settings = lazy(() => import("../pages/admin/Settings"));
+const Audit = lazy(() => import("../pages/admin/Audit"));
+const Automation = lazy(() => import("../pages/admin/Automation"));
 // Auth Pages
-const Login = lazy(() => import('../pages/auth/Login'));
-const ForgotPassword = lazy(() => import('../pages/auth/ForgotPassword'));
-const ResetPassword = lazy(() => import('../pages/auth/ResetPassword'));
-const Notifications = lazy(() => import('../pages/admin/Notifications'));
-const CompanyDashboard = lazy(() => import('../components/company/CompanyDashboard'));
+const Login = lazy(() => import("../pages/auth/Login"));
+const ForgotPassword = lazy(() => import("../pages/auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("../pages/auth/ResetPassword"));
+const Notifications = lazy(() => import("../pages/admin/Notifications"));
+const CompanyDashboard = lazy(() =>
+  import("../components/company/CompanyDashboard")
+);
+
 // Error Pages
-const Error404 = lazy(() => import('../pages/Error404'));
+const Error404 = lazy(() => import("../pages/Error404"));
 
 const routes = [
   {
-    path: '/admin',
+    path: "/admin",
     children: [
       {
-        path: 'dashboard',
+        path: "dashboard",
         element: Dashboard,
       },
       {
-        path: 'students',
+        path: "students",
         element: Students,
       },
       {
-        path: 'companies',
+        path: "companies",
         element: Companies,
       },
       {
-        path: 'jnf',        // Added JNF route
+        path: "jnf", // Added JNF route
         element: JNF,
       },
       {
-        path: 'placements',
+        path: "placements",
         element: Placements,
       },
       {
-        path: 'notifications',
+        path: "notifications",
         element: Notifications,
       },
       {
-        path: 'templates',
+        path: "templates",
         element: Templates,
       },
       {
-        path: 'automation',
+        path: "automation",
         element: Automation,
       },
       {
-        path: 'audit',
+        path: "audit",
         element: Audit,
       },
       {
-        path: 'reports',
+        path: "reports",
         element: Reports,
       },
       {
-        path: 'profile',
+        path: "profile",
         element: Profile,
       },
       {
-        path: 'settings',
+        path: "settings",
         element: Settings,
       },
     ],
   },
   {
-    path: '/auth',
+    path: "/auth",
     children: [
       {
-        path: 'login',
+        path: "login",
         element: Login,
       },
       {
-        path: 'forgot-password',
+        path: "forgot-password",
         element: ForgotPassword,
       },
       {
-        path: 'reset-password',
+        path: "reset-password",
         element: ResetPassword,
       },
     ],
   },
   {
-    path: '/company',
+    path: "/company",
     children: [
       {
-        path: 'dashboard',
+        path: "dashboard",
         element: CompanyDashboard,
       },
     ],
   },
   {
-    path: '*',
+    path: "*",
     element: Error404,
   },
 ];
