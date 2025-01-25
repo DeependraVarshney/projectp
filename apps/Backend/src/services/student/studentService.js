@@ -48,7 +48,7 @@ export default class StudentService {
       );
 
       if (student.statusCode !== 201) {
-        // await this.userServices.deleteUserById(user.data._id);
+        await this.userServices.deleteUser(userId);
         return new apiResponse(student.statusCode, null, student.message);
       }
 
@@ -97,6 +97,18 @@ export default class StudentService {
       return new apiResponse(200, student.data, "Student found successfully");
     } catch (error) {
       return new apiResponse(500, null, error.message);
+    }
+  }
+  async getStudentByRollNo(rollNo) {
+    try {
+      if (!rollNo) {
+        return apiResponse(400, null, "roll no is required");
+      }
+      const profile = await this.studentModel.getStudentByRollNo(rollNo);
+      return apiResponse(200, profile, "Profile fetched successfully");
+    } catch (error) {
+      console.log("error in student service", error);
+      return apiResponse(500, null, error.message);
     }
   }
 }

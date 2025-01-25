@@ -1,10 +1,10 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 const PublicRoute = () => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/admin/dashboard";
+  const from = location.state?.from?.pathname || '/admin/dashboard';
 
   if (isAuthenticated) {
     // Redirect to the page user tried to visit or dashboard
@@ -14,4 +14,4 @@ const PublicRoute = () => {
   return <Outlet />;
 };
 
-export default PublicRoute;
+export default PublicRoute; 

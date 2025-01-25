@@ -18,7 +18,6 @@ export default class StudentController {
     );
     res.status(updatedProfile.statusCode).json(updatedProfile);
   });
-
   getProfile = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const profile = await this.studentService.getProfile(id);
